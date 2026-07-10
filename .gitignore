@@ -1,69 +1,97 @@
-# Prerequisites
-*.d
+# ==========================
+# CLion
+# ==========================
+.idea/
+*.iml
 
-# Compiled Object files
-*.slo
-*.lo
+# 如果希望共享代码风格、Run Configuration，可改为：
+# .idea/*
+# !.idea/codeStyles/
+# !.idea/runConfigurations/
+# !.idea/vcs.xml
+
+# ==========================
+# CMake
+# ==========================
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+compile_commands.json
+CTestTestfile.cmake
+cmake_install.cmake
+install_manifest.txt
+Makefile
+
+# Ninja
+build.ninja
+.ninja_deps
+.ninja_log
+
+# ==========================
+# Build directories
+# ==========================
+build/
+out/
+bin/
+lib/
+
+# ==========================
+# Object files
+# ==========================
 *.o
 *.obj
+*.lo
+*.slo
 
-# Precompiled Headers
-*.gch
-*.pch
-
-# Linker files
-*.ilk
-
-# Debugger Files
-*.pdb
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-*.so.*
-
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
+# ==========================
+# Static libraries
+# ==========================
 *.a
 *.lib
 
+# ==========================
+# Dynamic libraries
+# ==========================
+*.so
+*.dylib
+*.dll
+
+# ==========================
 # Executables
+# ==========================
 *.exe
 *.out
 *.app
 
-# Build directories
-build/
-Build/
-build-*/
+# ==========================
+# Debug
+# ==========================
+*.dSYM/
+*.pdb
 
-# CMake generated files
-CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-Makefile
-install_manifest.txt
-compile_commands.json
-
-# Temporary files
-*.tmp
+# ==========================
+# Logs
+# ==========================
 *.log
-*.bak
+
+# ==========================
+# macOS
+# ==========================
+.DS_Store
+
+# ==========================
+# Visual Studio
+# ==========================
+.vs/
+
+# ==========================
+# VSCode
+# ==========================
+.vscode/
+
+# ==========================
+# Temporary
+# ==========================
 *.swp
-
-# vcpkg
-vcpkg_installed/
-
-# debug information files
-*.dwo
-
-# test output & cache
-Testing/
-.cache/
+*.swo
+*~
