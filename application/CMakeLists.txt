@@ -2,5 +2,6 @@
 file(GLOB_RECURSE APP ./  *.cpp)
 
 #将FUNCS中所有cpp编译为funcs这个lib库
-add_library(applicationLib ${APP} )
+add_library(applicationLib ${APP}
+        ../gpu/framebuffer.cpp)
 

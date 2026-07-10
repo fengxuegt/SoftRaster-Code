@@ -1,8 +1,22 @@
 #include <Windows.h>
 #include<iostream>
 #include "application/application.h"
+#include "gpu/gpu.h"
 
 #pragma comment(linker, "/subsystem:console /entry:wWinMainCRTStartup" )
+
+void Render() {
+	MALEOON->ClearSurfaceView();
+	for (int i = 0; i < app->GetWidth(); i++) {
+		for (int j = 0; j < app->GetHeight(); j++) {
+			uint32_t v = std::rand() % 255;
+			RGBA color(v, v, v, v);
+			MALEOON->DrawPoint(i, j, color);
+		}
+	}
+}
+
+
 
 /*
 * 1 主循环流程在winMain函数中
@@ -17,10 +31,13 @@ int APIENTRY wWinMain(
 	if (!app->initApplication(hInstance,800, 600)) {
 		return -1;
 	}
+	MALEOON->InitSurfaceView(app->GetWidth(), app->GetHeight(), app->GetCanvas());
 
 	bool alive = true;
 	while (alive) {
 		alive = app->peekMessage();
+		Render();
+		app->show();
 	}
 
 	return 0;

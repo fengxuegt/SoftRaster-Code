@@ -28,6 +28,31 @@ bool Application::initApplication(HINSTANCE hInstance, const uint32_t& width, co
 	if (!createWindow(hInstance)) {
 		return false;
 	}
+	//初始化画布
+	/*
+	* DC：Device Context 设备上下文描述对象
+	* 每个窗口都有自己对应的设备区域映射，即mhDC
+	* 这里创建一个与本窗口兼容的DC，mCanvasDC
+	* 可以从mCanvasDC向mhDC拷贝绘图数据内容
+	*/
+	mhDC = GetDC(mHwnd);
+	mCanvasDC = CreateCompatibleDC(mhDC);
+
+	BITMAPINFO  bmpInfo{};
+	bmpInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bmpInfo.bmiHeader.biWidth = mWidth;
+	bmpInfo.bmiHeader.biHeight = mHeight;
+	bmpInfo.bmiHeader.biPlanes = 1;
+	bmpInfo.bmiHeader.biBitCount = 32;
+	bmpInfo.bmiHeader.biCompression = BI_RGB; //实际上存储方式为bgra
+
+	//创建与mhMem兼容的位图,其实实在mhMem指代的设备上划拨了一块内存，让mCanvasBuffer指向它
+	mhBmp = CreateDIBSection(mCanvasDC, &bmpInfo, DIB_RGB_COLORS, (void**)&mCanvasBuffer, 0, 0);//在这里创建buffer的内存
+
+	//一个设备可以创建多个位图，本设备使用mhBmp作为激活位图，对mCanvasDC的内存拷出，其实就是拷出了mhBmp的数据
+	SelectObject(mCanvasDC, mhBmp);
+
+	memset(mCanvasBuffer, 0, mWidth * mHeight * 4); //清空buffer为0
 
 	return true;
 }
@@ -109,6 +134,10 @@ bool Application::peekMessage() {
 	}
 
 	return mAlive;
+}
+
+void Application::show() {
+	BitBlt(mhDC, 0, 0, mWidth, mHeight, mCanvasDC, 0, 0, SRCCOPY);
 }
 
 void Application::handleMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
