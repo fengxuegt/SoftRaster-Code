@@ -14,9 +14,25 @@ void Render() {
 	// 		MALEOON->DrawPoint(i, j, color);
 	// 	}
 	// }
-	Point start = Point(100 ,500);
-	Point end = Point(200, 0);
-	MALEOON->DrawLine(start, end);
+	// Point start = Point(100 ,500);
+	// start.color = RGBA{0, 255, 0, 0};
+	// Point end = Point(200, 0);
+	// end.color = RGBA{0, 0, 255, 0};
+	// MALEOON->DrawLine(start, end);
+
+	int r = 150;
+	Point c{ 400, 300, RGBA(255, 0, 0, 255) };
+
+	for (float i = 0; i < 360; i += 10)
+	{
+		float radian = DEG2RAD(i);
+		int x = r * sin(radian) + c.x;
+		int y = r * cos(radian) + c.y;
+
+		Point  pt{ x, y, RGBA(rand() % 255, rand() % 255, rand() % 255, 255) };
+
+		MALEOON->DrawLine(c, pt);
+	}
 }
 
 

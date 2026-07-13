@@ -10,7 +10,7 @@
 class Raster {
 public:
     static void DrawLine(std::vector<Point> &results, const Point &p, const Point &q);
-    static void InterpolantLine(Point &p, Point &q, Point &target);
+    static void InterpolantLine(const Point &p, const Point &q, float weight, Point &target);
 public:
     Raster();
     ~Raster();

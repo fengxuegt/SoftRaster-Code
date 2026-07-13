@@ -61,20 +61,29 @@ void Raster::DrawLine(std::vector<Point> &results, const Point &p, const Point &
         cur += 2 * deltaY;
         curPoint.x = currentX;
         curPoint.y = currentY;
-        curPoint.color = RGBA(0, 255, 0, 255);
+        float weight = i / static_cast<float>(deltaX);
+        InterpolantLine(start, end, weight, curPoint);
+
         if (swapXY) {
             std::swap(curPoint.x, curPoint.y);
         }
         if (flipY) {
             curPoint.y *= -1;
         }
+        // curPoint.color = RGBA(0, 255, 0, 255);
         results.push_back(curPoint);
     }
 
 
 }
 
-void Raster::InterpolantLine(Point &p, Point &q, Point &target) {
+void Raster::InterpolantLine(const Point &start, const Point &end, float weight, Point &target) {
+    RGBA color;
+    color.mA = static_cast<byte>(start.color.mA * (1 - weight) + end.color.mA * weight);
+    color.mR = static_cast<byte>(start.color.mR * (1 - weight) + end.color.mR * weight);
+    color.mG = static_cast<byte>(start.color.mG * (1 - weight) + end.color.mG * weight);
+    color.mB = static_cast<byte>(start.color.mB * (1 - weight) + end.color.mB * weight);
+    target.color = color;
 }
 
 Raster::Raster() {
