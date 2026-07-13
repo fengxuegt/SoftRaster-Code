@@ -28,3 +28,9 @@ struct RGBA {
     }
 
 };
+
+struct Point {
+    Point(int x, int y):x(x), y(y), color(RGBA{0, 0, 0, 0}) {}
+    int32_t x, y;
+    RGBA color;
+};

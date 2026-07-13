@@ -7,13 +7,16 @@
 
 void Render() {
 	MALEOON->ClearSurfaceView();
-	for (int i = 0; i < app->GetWidth(); i++) {
-		for (int j = 0; j < app->GetHeight(); j++) {
-			uint32_t v = std::rand() % 255;
-			RGBA color(v, v, v, v);
-			MALEOON->DrawPoint(i, j, color);
-		}
-	}
+	// for (int i = 0; i < app->GetWidth(); i++) {
+	// 	for (int j = 0; j < app->GetHeight(); j++) {
+	// 		uint32_t v = std::rand() % 255;
+	// 		RGBA color(v, v, v, v);
+	// 		MALEOON->DrawPoint(i, j, color);
+	// 	}
+	// }
+	Point start = Point(100 ,500);
+	Point end = Point(200, 0);
+	MALEOON->DrawLine(start, end);
 }
 
 

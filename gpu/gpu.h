@@ -14,6 +14,7 @@ class GPU {
 public:
     // draw函数
     void DrawPoint(const uint32_t i, const uint32_t j, const RGBA &color);
+    void DrawLine(const Point &p, const Point &q);
 public:
     static GPU *GetInstance();
     ~GPU();
