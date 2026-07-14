@@ -16,6 +16,8 @@ public:
     static void DrawTriangleReference(std::vector<Point> &results, const Point &pointA, const Point &pointB, const Point &pointC);
     static void InterpolantTriangle(const Point &pointA, const Point &pointB, const Point &pointC, Point &target);
 
+    static RGBA lerpRGBA(const RGBA &a, const RGBA &b, float weight);
+
 public:
     Raster();
     ~Raster();

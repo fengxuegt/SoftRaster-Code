@@ -21,6 +21,9 @@ public:
     void DrawImageWithAlpha(Image *image, const int alpha);
 
     RGBA SampleNearest(math::vec2f &uv);
+    RGBA SampleBilinear(math::vec2f &uv);
+
+
 public:
     static GPU *GetInstance();
     ~GPU();
@@ -33,6 +36,9 @@ public:
 
 private:
     GPU();
+
+private:
+    Point lerp(const Point &a, const Point &b, float weight);
 
 private:
     static GPU *mGPUInstance; // 声明时不能初始化，必须在cpp文件中初始化

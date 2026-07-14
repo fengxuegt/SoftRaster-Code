@@ -11,13 +11,13 @@ Point p2{ 400, 900, RGBA(0, 255, 0, 255) };
 Point p3{ 800, 0, RGBA(0, 0, 255, 255) };
 void Prepare() {
 	imagee = Image::CreateImage("assets/textures/goku.jpg");
+	MALEOON->SetTexture(imagee);
 	p1.uv = math::vec2f(0.0f, 0.0f);
 	p2.uv = math::vec2f(0.5f, 1.0f);
 	p3.uv = math::vec2f(1.0f, 0.0f);
 }
 void Render() {
 	MALEOON->ClearSurfaceView();
-	MALEOON->SetTexture(imagee);
 	MALEOON->DrawTriangle(p1, p2, p3);
 }
 
@@ -33,7 +33,7 @@ int APIENTRY wWinMain(
 	_In_ LPWSTR    lpCmdLine,		//应用程序运行参数
 	_In_ int       nCmdShow)		//窗口如何显示（最大化、最小化、隐藏），不需理会
 {
-	if (!app->initApplication(hInstance,800, 600)) {
+	if (!app->initApplication(hInstance,1024, 960)) {
 		return -1;
 	}
 	MALEOON->InitSurfaceView(app->GetWidth(), app->GetHeight(), app->GetCanvas());

@@ -211,11 +211,16 @@ void Raster::InterpolantTriangle(const Point &pointA, const Point &pointB, const
 
     target.uv[0] = static_cast<float>(pointA.uv[0] * weightA + pointB.uv[0] * weightB + pointC.uv[0] * weightC);
     target.uv[1] = static_cast<float>(pointA.uv[1] * weightA + pointB.uv[1] * weightB + pointC.uv[1] * weightC);
-
-    // std::cout << target.uv[0] << ", " << target.uv[1] << std::endl;
 }
 
-
+RGBA Raster::lerpRGBA(const RGBA &a, const RGBA &b, float weight) {
+    RGBA result;
+    result.mA = static_cast<byte>(a.mA * (1 - weight) + b.mA * weight);
+    result.mB = static_cast<byte>(a.mB * (1 - weight) + b.mB * weight);
+    result.mR = static_cast<byte>(a.mR * (1 - weight) + b.mR * weight);
+    result.mG = static_cast<byte>(a.mG * (1 - weight) + b.mG * weight);
+    return result;
+}
 
 
 Raster::Raster() {

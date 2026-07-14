@@ -20,6 +20,7 @@ GPU * GPU::GetInstance() {
 GPU::GPU() {
 }
 
+
 GPU::~GPU() {
     if (mFrameBuffer) {
         delete mFrameBuffer;
@@ -90,7 +91,8 @@ void GPU::DrawTriangle(const Point &pointA, const Point &pointB, const Point &po
     RGBA color;
     for (auto &p : pixels) {
         if (mTexture) {
-            color = SampleNearest(p.uv);
+            // color = SampleNearest(p.uv);
+            color = SampleBilinear(p.uv);
         } else {
             color = p.color;
         }
@@ -129,4 +131,43 @@ RGBA GPU::SampleNearest(math::vec2f &uv) {
     int y = static_cast<int>(std::round(v * (mTexture->mHeight - 1)));
     int currentPos = y * mTexture->mWidth + x;
     return mTexture->mData[currentPos];
+}
+
+RGBA GPU::SampleBilinear(math::vec2f &uv) {
+    if (mTexture == nullptr || mTexture->mData == nullptr || mTexture->mWidth <= 0 || mTexture->mHeight <= 0) {
+        return RGBA{0, 0, 0, 0};
+    }
+    float u = std::clamp(uv.x, 0.0f, 1.0f);
+    float v = std::clamp(uv.y, 0.0f, 1.0f);
+    // 需要保留小数
+    float x = u * (mTexture->mWidth - 1);
+    float y = v * (mTexture->mHeight - 1);
+
+    // 保留小数之后直接向下取整，就是左上
+    int x0 = static_cast<int>(std::floor(x));
+    int y0 = static_cast<int>(std::floor(y));
+    int x1 = std::min(x0 + 1, mTexture->mWidth - 1);
+    int y1 = std::min(y0 + 1, mTexture->mHeight - 1);
+    // 左上
+    Point a {x0, y1};
+    int aPos = y1 * mTexture->mWidth + x0;
+    // 左下
+    Point b {x0, y0};
+    int bPos = y0 * mTexture->mWidth + x0;
+    // 右下
+    Point c {x1, y0};
+    int cPos = y0 * mTexture->mWidth + x1;
+    // 右上
+    Point d {x1, y1};
+    int dPos = y1 * mTexture->mWidth + x1;
+    // 先进行纵向插值
+    RGBA aColor = mTexture->mData[aPos];
+    RGBA bColor = mTexture->mData[bPos];
+    RGBA cColor = mTexture->mData[cPos];
+    RGBA dColor = mTexture->mData[dPos];
+
+    RGBA leftColor = Raster::lerpRGBA(aColor, bColor, y - y0);
+    RGBA rightColor = Raster::lerpRGBA(dColor, cColor, y - y0);
+    RGBA result = Raster::lerpRGBA(leftColor, rightColor, x - x0);
+    return  result;
 }
