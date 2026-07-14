@@ -2,46 +2,23 @@
 #include<iostream>
 #include "application/application.h"
 #include "gpu/gpu.h"
+#include "application/image.h"
 
 #pragma comment(linker, "/subsystem:console /entry:wWinMainCRTStartup" )
-
+Image *imagee;
+Point p1{ 0, 0, RGBA(255, 0, 0, 255)};
+Point p2{ 400, 900, RGBA(0, 255, 0, 255) };
+Point p3{ 800, 0, RGBA(0, 0, 255, 255) };
+void Prepare() {
+	imagee = Image::CreateImage("assets/textures/goku.jpg");
+	p1.uv = math::vec2f(0.0f, 0.0f);
+	p2.uv = math::vec2f(0.5f, 1.0f);
+	p3.uv = math::vec2f(1.0f, 0.0f);
+}
 void Render() {
 	MALEOON->ClearSurfaceView();
-	// for (int i = 0; i < app->GetWidth(); i++) {
-	// 	for (int j = 0; j < app->GetHeight(); j++) {
-	// 		uint32_t v = std::rand() % 255;
-	// 		RGBA color(v, v, v, v);
-	// 		MALEOON->DrawPoint(i, j, color);
-	// 	}
-	// }
-	// Point start = Point(100 ,500);
-	// start.color = RGBA{0, 255, 0, 0};
-	// Point end = Point(200, 0);
-	// end.color = RGBA{0, 0, 255, 0};
-	// MALEOON->DrawLine(start, end);
-
-	// int r = 150;
-	// Point c{400, 300, RGBA(255, 0, 0, 255)};
-	//
-	// for (float i = 0; i < 360; i += 10) {
-	// 	float radian = DEG2RAD(i);
-	// 	int x = r * sin(radian) + c.x;
-	// 	int y = r * cos(radian) + c.y;
-	//
-	// 	Point pt{x, y, RGBA(rand() % 255, rand() % 255, rand() % 255, 255)};
-	//
-	// 	MALEOON->DrawLine(c, pt);
-	// }
-
-	// 绘制三角形
-	// Point p1{ 0, 100, RGBA(255, 0, 0, 255)};
-	// Point p2{ 500, 100, RGBA(0, 255, 0, 255) };
-	// Point p3{ 250, 500, RGBA(0, 0, 255, 255) };
-	// MALEOON->DrawTriangle(p1, p2, p3);
-	Image *image = Image::CreateImage("assets/textures/goku.jpg"); //
-	MALEOON->SetEnableBlending(true);
-	// MALEOON->DrawImage(image);
-	MALEOON->DrawImageWithAlpha(image, 100);
+	MALEOON->SetTexture(imagee);
+	MALEOON->DrawTriangle(p1, p2, p3);
 }
 
 
@@ -62,6 +39,7 @@ int APIENTRY wWinMain(
 	MALEOON->InitSurfaceView(app->GetWidth(), app->GetHeight(), app->GetCanvas());
 
 	bool alive = true;
+	Prepare();
 	while (alive) {
 		alive = app->peekMessage();
 		Render();

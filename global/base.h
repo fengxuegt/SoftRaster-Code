@@ -6,6 +6,8 @@
 #include<cmath>
 #include<assert.h>
 
+#include "../math/vector.h"
+
 #define PI					3.14159265358979323
 #define DEG2RAD(theta)		(0.01745329251994329 * (theta))
 #define FRACTION(v)			((v) - (int)(v))
@@ -35,4 +37,5 @@ struct Point {
     Point(int x, int y, RGBA color):x(x), y(y), color(color) {}
     int32_t x, y;
     RGBA color;
+    math::vec2f uv{0.0f, 0.0f};
 };

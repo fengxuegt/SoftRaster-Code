@@ -208,7 +208,14 @@ void Raster::InterpolantTriangle(const Point &pointA, const Point &pointB, const
     target.color.mB = static_cast<byte>(weightA * pointA.color.mB + weightB * pointB.color.mB + weightC * pointC.color.mB );
     target.color.mR = static_cast<byte>(weightA * pointA.color.mR + weightB * pointB.color.mR + weightC * pointC.color.mR );
     target.color.mG = static_cast<byte>(weightA * pointA.color.mG + weightB * pointB.color.mG + weightC * pointC.color.mG );
+
+    target.uv[0] = static_cast<float>(pointA.uv[0] * weightA + pointB.uv[0] * weightB + pointC.uv[0] * weightC);
+    target.uv[1] = static_cast<float>(pointA.uv[1] * weightA + pointB.uv[1] * weightB + pointC.uv[1] * weightC);
+
+    // std::cout << target.uv[0] << ", " << target.uv[1] << std::endl;
 }
+
+
 
 
 Raster::Raster() {

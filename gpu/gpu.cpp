@@ -36,6 +36,11 @@ void GPU::SetEnableBlending(const bool &bEnableBlending) {
     mEnableBlending = bEnableBlending;
 }
 
+void GPU::SetTexture(Image *image) {
+    mTexture = image;
+    std::cout << image->mWidth << image->mHeight << std::endl;
+}
+
 void GPU::DrawPoint(const uint32_t i, const uint32_t j, const RGBA &color) {
     uint32_t pixelPos = j * mFrameBuffer->GetWidth() + i;
     RGBA result = color;
@@ -66,8 +71,14 @@ void GPU::DrawTriangle(const Point &pointA, const Point &pointB, const Point &po
     std::vector<Point> pixels;
     Raster::DrawTriangle(pixels, pointA, pointB, pointC);
     // Raster::DrawTriangleReference(pixels, pointA, pointB, pointC);
-    for (auto p : pixels) {
-        MALEOON->DrawPoint(p.x, p.y, p.color);
+    RGBA color;
+    for (auto &p : pixels) {
+        if (mTexture) {
+            color = SampleNearest(p.uv);
+        } else {
+            color = p.color;
+        }
+        MALEOON->DrawPoint(p.x, p.y, color);
     }
 }
 
@@ -89,5 +100,12 @@ void GPU::DrawImageWithAlpha(Image *image, const int alpha) {
             MALEOON->DrawPoint(i, j, color);
         }
     }
+}
+
+RGBA GPU::SampleNearest(math::vec2f &uv) {
+    int x = std::round(uv.x * (mTexture->mWidth - 1));
+    int y = std::round(uv.y * (mTexture->mHeight - 1));
+    int currentPos = y * mTexture->mWidth + x;
+    return mTexture->mData[currentPos];
 }
 
