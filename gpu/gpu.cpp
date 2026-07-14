@@ -166,8 +166,8 @@ RGBA GPU::SampleBilinear(math::vec2f &uv) {
     RGBA cColor = mTexture->mData[cPos];
     RGBA dColor = mTexture->mData[dPos];
 
-    RGBA leftColor = Raster::lerpRGBA(aColor, bColor, y - y0);
-    RGBA rightColor = Raster::lerpRGBA(dColor, cColor, y - y0);
+    RGBA leftColor = Raster::lerpRGBA(bColor, aColor, y - y0);
+    RGBA rightColor = Raster::lerpRGBA(cColor, dColor, y - y0);
     RGBA result = Raster::lerpRGBA(leftColor, rightColor, x - x0);
     return  result;
 }
