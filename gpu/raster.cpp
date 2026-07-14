@@ -3,7 +3,7 @@
 //
 
 #include "raster.h"
-
+#include "math.h"
 void Raster::DrawLine(std::vector<Point> &results, const Point &p, const Point &q) {
     Point start = p;
     Point end = q;

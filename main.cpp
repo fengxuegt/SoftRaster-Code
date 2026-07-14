@@ -21,15 +21,14 @@ void Render() {
 	// MALEOON->DrawLine(start, end);
 
 	int r = 150;
-	Point c{ 400, 300, RGBA(255, 0, 0, 255) };
+	Point c{400, 300, RGBA(255, 0, 0, 255)};
 
-	for (float i = 0; i < 360; i += 10)
-	{
+	for (float i = 0; i < 360; i += 10) {
 		float radian = DEG2RAD(i);
 		int x = r * sin(radian) + c.x;
 		int y = r * cos(radian) + c.y;
 
-		Point  pt{ x, y, RGBA(rand() % 255, rand() % 255, rand() % 255, 255) };
+		Point pt{x, y, RGBA(rand() % 255, rand() % 255, rand() % 255, 255)};
 
 		MALEOON->DrawLine(c, pt);
 	}
