@@ -54,3 +54,12 @@ void GPU::DrawTriangle(const Point &pointA, const Point &pointB, const Point &po
     }
 }
 
+void GPU::DrawImage(Image *image) {
+    for (int i = 0; i < image->mWidth; ++i) {
+        for (int j = 0; j < image->mHeight; ++j) {
+            int currentPos = j * image->mWidth + i;
+            MALEOON->DrawPoint(i, j, image->mData[currentPos]);
+        }
+    }
+}
+

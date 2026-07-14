@@ -5,7 +5,7 @@
 #ifndef GRAPHIC_RASTER_H
 #define GRAPHIC_RASTER_H
 #include "../global/base.h"
-
+#include "../application/image.h"
 
 class Raster {
 public:
@@ -15,6 +15,7 @@ public:
     static void DrawTriangle(std::vector<Point> &results, const Point &pointA, const Point &pointB, const Point &pointC);
     static void DrawTriangleReference(std::vector<Point> &results, const Point &pointA, const Point &pointB, const Point &pointC);
     static void InterpolantTriangle(const Point &pointA, const Point &pointB, const Point &pointC, Point &target);
+
 public:
     Raster();
     ~Raster();

@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include "framebuffer.h"
+#include "../application/image.h"
 #include "../global/base.h"
 #define MALEOON GPU::GetInstance()
 
@@ -16,6 +17,7 @@ public:
     void DrawPoint(const uint32_t i, const uint32_t j, const RGBA &color);
     void DrawLine(const Point &p, const Point &q);
     void DrawTriangle(const Point &pointA, const Point &pointB, const Point &pointC);
+    void DrawImage(Image *image);
 public:
     static GPU *GetInstance();
     ~GPU();
