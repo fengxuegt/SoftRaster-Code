@@ -45,3 +45,12 @@ void GPU::DrawLine(const Point &p, const Point &q) {
     }
 }
 
+void GPU::DrawTriangle(const Point &pointA, const Point &pointB, const Point &pointC) {
+    std::vector<Point> pixels;
+    Raster::DrawTriangle(pixels, pointA, pointB, pointC);
+    // Raster::DrawTriangleReference(pixels, pointA, pointB, pointC);
+    for (auto p : pixels) {
+        MALEOON->DrawPoint(p.x, p.y, p.color);
+    }
+}
+

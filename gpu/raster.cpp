@@ -4,6 +4,9 @@
 
 #include "raster.h"
 #include "math.h"
+#include "../math/mathfunctions.h"
+#include "../math/vector.h"
+
 void Raster::DrawLine(std::vector<Point> &results, const Point &p, const Point &q) {
     Point start = p;
     Point end = q;
@@ -85,6 +88,128 @@ void Raster::InterpolantLine(const Point &start, const Point &end, float weight,
     color.mB = static_cast<byte>(start.color.mB * (1 - weight) + end.color.mB * weight);
     target.color = color;
 }
+
+void Raster::DrawTriangle(std::vector<Point> &results, const Point &pointA, const Point &pointB, const Point &pointC) {
+    int left = std::min(pointA.x, std::min(pointB.x, pointC.x));
+    int right = std::max(pointA.x, std::max(pointB.x, pointC.x));
+    int top = std::max(pointA.y, std::max(pointB.y, pointC.y));
+    int bottom = std::min(pointA.y, std::min(pointB.y, pointC.y));
+
+    math::vec2f pa, pb, pc;
+    Point currentPoint;
+    for (int i = left; i <= right; i++) {
+        for (int j = bottom; j <= top; j++) {
+            currentPoint.x = i;
+            currentPoint.y = j;
+
+            pa.x = static_cast<float>(pointA.x - currentPoint.x);
+            pa.y = static_cast<float>(pointA.y - currentPoint.y);
+
+            pb.x = static_cast<float>(pointB.x - currentPoint.x);
+            pb.y = static_cast<float>(pointB.y - currentPoint.y);
+
+            pc.x = static_cast<float>(pointC.x - currentPoint.x);
+            pc.y = static_cast<float>(pointC.y - currentPoint.y);
+
+            // 叉积可以考虑大于或者等于0
+            if ((math::cross(pa, pb) >= 0 && math::cross(pb, pc) >= 0 && math::cross(pc, pa) >= 0) ||
+                (math::cross(pa, pb) <= 0 && math::cross(pb, pc) <= 0 && math::cross(pc, pa) <= 0)) {
+                // 保证在三角形内部再计算插值
+                InterpolantTriangle(pointA, pointB, pointC, currentPoint);
+                results.push_back(currentPoint);
+            }
+        }
+    }
+}
+
+// chatgpt 优化后的代码
+void Raster::DrawTriangleReference(std::vector<Point> &results, const Point &pointA, const Point &pointB,
+    const Point &pointC) {
+        int left = std::min({pointA.x, pointB.x, pointC.x});
+        int right = std::max({pointA.x, pointB.x, pointC.x});
+        int bottom = std::min({pointA.y, pointB.y, pointC.y});
+        int top = std::max({pointA.y, pointB.y, pointC.y});
+
+        for (int x = left; x <= right; ++x) {
+            for (int y = bottom; y <= top; ++y) {
+                Point currentPoint{};
+                currentPoint.x = x;
+                currentPoint.y = y;
+
+                // 这种初始化方式值得学习
+                math::vec2f pa{
+                    static_cast<float>(pointA.x - x),
+                    static_cast<float>(pointA.y - y)
+                };
+
+                math::vec2f pb{
+                    static_cast<float>(pointB.x - x),
+                    static_cast<float>(pointB.y - y)
+                };
+
+                math::vec2f pc{
+                    static_cast<float>(pointC.x - x),
+                    static_cast<float>(pointC.y - y)
+                };
+
+                // 将结果保存下来减少计算量
+                float crossAB = math::cross(pa, pb);
+                float crossBC = math::cross(pb, pc);
+                float crossCA = math::cross(pc, pa);
+
+                bool hasNegative =
+                    crossAB < 0 || crossBC < 0 || crossCA < 0;
+
+                bool hasPositive =
+                    crossAB > 0 || crossBC > 0 || crossCA > 0;
+
+                if (!(hasNegative && hasPositive)) {
+                    InterpolantTriangle(pointA, pointB, pointC, currentPoint);
+                    results.push_back(currentPoint);
+                }
+            }
+        }
+}
+
+
+void Raster::InterpolantTriangle(const Point &pointA, const Point &pointB, const Point &pointC, Point &target) {
+    math::vec2f ab {
+        static_cast<float>(pointB.x - pointA.x),
+        static_cast<float>(pointB.y - pointA.y)
+    };
+    math::vec2f ac {
+        static_cast<float>(pointC.x - pointA.x),
+        static_cast<float>(pointC.y - pointA.y)
+    };
+
+    math::vec2f pa {
+        static_cast<float>(pointA.x - target.x),
+        static_cast<float>(pointA.y - target.y)
+    };
+    math::vec2f pb {
+        static_cast<float>(pointB.x - target.x),
+        static_cast<float>(pointB.y - target.y)
+    };
+    math::vec2f pc {
+        static_cast<float>(pointC.x - target.x),
+        static_cast<float>(pointC.y - target.y)
+    };
+
+    float sTriangle = std::abs(math::cross(ab, ac));
+    float sPAB = std::abs(math::cross(pa, pb));
+    float sPBC = std::abs(math::cross(pb, pc));
+    float sPCA = std::abs(math::cross(pc, pa));
+
+    float weightA = sPBC / sTriangle;
+    float weightB = sPCA / sTriangle;
+    float weightC = sPAB / sTriangle;
+
+    target.color.mA = static_cast<byte>(weightA * pointA.color.mA + weightB * pointB.color.mA + weightC * pointC.color.mA );
+    target.color.mB = static_cast<byte>(weightA * pointA.color.mB + weightB * pointB.color.mB + weightC * pointC.color.mB );
+    target.color.mR = static_cast<byte>(weightA * pointA.color.mR + weightB * pointB.color.mR + weightC * pointC.color.mR );
+    target.color.mG = static_cast<byte>(weightA * pointA.color.mG + weightB * pointB.color.mG + weightC * pointC.color.mG );
+}
+
 
 Raster::Raster() {
 }

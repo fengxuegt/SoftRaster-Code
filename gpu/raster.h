@@ -11,6 +11,10 @@ class Raster {
 public:
     static void DrawLine(std::vector<Point> &results, const Point &p, const Point &q);
     static void InterpolantLine(const Point &p, const Point &q, float weight, Point &target);
+
+    static void DrawTriangle(std::vector<Point> &results, const Point &pointA, const Point &pointB, const Point &pointC);
+    static void DrawTriangleReference(std::vector<Point> &results, const Point &pointA, const Point &pointB, const Point &pointC);
+    static void InterpolantTriangle(const Point &pointA, const Point &pointB, const Point &pointC, Point &target);
 public:
     Raster();
     ~Raster();
