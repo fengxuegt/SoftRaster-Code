@@ -36,7 +36,7 @@ private:
 
 private:
     static GPU *mGPUInstance; // 声明时不能初始化，必须在cpp文件中初始化
-    FrameBuffer *mFrameBuffer;
+    FrameBuffer *mFrameBuffer {nullptr};
     bool mEnableBlending {false};
 
     Image *mTexture {nullptr};

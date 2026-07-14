@@ -25,7 +25,7 @@ namespace math {
 
             // 取得x或者y元素
             const T operator[](int index) const{
-                if (index < 0 || index > 2) {
+                if (index < 0 || index >= 2) {
                     assert(false);
                 }
                 if (index == 0) {
@@ -36,7 +36,7 @@ namespace math {
 
             // 向某个元素赋值
             T& operator[](int index) {
-                if (index < 0 || index > 2) {
+                if (index < 0 || index >= 2) {
                     assert(false);
                 }
                 if (index == 0) {
@@ -278,7 +278,7 @@ namespace math {
 		}
 
 		Vector4<T> operator-() const {
-			return Vector3(-x, -y, -z, -w);
+			return Vector4<T>(-x, -y, -z, -w);
 		}
 
 		void print() {

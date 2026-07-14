@@ -6,6 +6,9 @@
 
 #include "raster.h"
 
+#include <algorithm>
+#include <cmath>
+
 GPU* GPU::mGPUInstance = nullptr;
 GPU * GPU::GetInstance() {
     if (mGPUInstance == nullptr) {
@@ -28,6 +31,10 @@ void GPU::InitSurfaceView(const uint32_t &width, const uint32_t &height, void *d
 }
 
 void GPU::ClearSurfaceView() {
+    if (mFrameBuffer == nullptr || mFrameBuffer->GetColorBuffer() == nullptr) {
+        return;
+    }
+
     uint32_t pixelSize = mFrameBuffer->GetWidth() * mFrameBuffer->GetHeight();
     std::fill_n(mFrameBuffer->GetColorBuffer(), pixelSize, RGBA{0, 0, 0, 0}); // 记忆一下这个函数的用法，
 }
@@ -38,10 +45,19 @@ void GPU::SetEnableBlending(const bool &bEnableBlending) {
 
 void GPU::SetTexture(Image *image) {
     mTexture = image;
-    std::cout << image->mWidth << image->mHeight << std::endl;
+    if (image) {
+        std::cout << image->mWidth << image->mHeight << std::endl;
+    }
 }
 
 void GPU::DrawPoint(const uint32_t i, const uint32_t j, const RGBA &color) {
+    if (mFrameBuffer == nullptr || mFrameBuffer->GetColorBuffer() == nullptr) {
+        return;
+    }
+    if (i >= mFrameBuffer->GetWidth() || j >= mFrameBuffer->GetHeight()) {
+        return;
+    }
+
     uint32_t pixelPos = j * mFrameBuffer->GetWidth() + i;
     RGBA result = color;
     if (mEnableBlending) {
@@ -103,9 +119,14 @@ void GPU::DrawImageWithAlpha(Image *image, const int alpha) {
 }
 
 RGBA GPU::SampleNearest(math::vec2f &uv) {
-    int x = std::round(uv.x * (mTexture->mWidth - 1));
-    int y = std::round(uv.y * (mTexture->mHeight - 1));
+    if (mTexture == nullptr || mTexture->mData == nullptr || mTexture->mWidth <= 0 || mTexture->mHeight <= 0) {
+        return RGBA{0, 0, 0, 0};
+    }
+
+    float u = std::clamp(uv.x, 0.0f, 1.0f);
+    float v = std::clamp(uv.y, 0.0f, 1.0f);
+    int x = static_cast<int>(std::round(u * (mTexture->mWidth - 1)));
+    int y = static_cast<int>(std::round(v * (mTexture->mHeight - 1)));
     int currentPos = y * mTexture->mWidth + x;
     return mTexture->mData[currentPos];
 }
-
