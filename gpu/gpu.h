@@ -18,11 +18,15 @@ public:
     void DrawLine(const Point &p, const Point &q);
     void DrawTriangle(const Point &pointA, const Point &pointB, const Point &pointC);
     void DrawImage(Image *image);
+    void DrawImageWithAlpha(Image *image, const int alpha);
 public:
     static GPU *GetInstance();
     ~GPU();
     void InitSurfaceView(const uint32_t &width, const uint32_t &height, void* data);
     void ClearSurfaceView();
+
+public:
+    void SetEnableBlending(const bool &bEnableBlending);
 
 private:
     GPU();
@@ -30,6 +34,7 @@ private:
 private:
     static GPU *mGPUInstance; // 声明时不能初始化，必须在cpp文件中初始化
     FrameBuffer *mFrameBuffer;
+    bool mEnableBlending {false};
 };
 
 

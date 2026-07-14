@@ -32,9 +32,26 @@ void GPU::ClearSurfaceView() {
     std::fill_n(mFrameBuffer->GetColorBuffer(), pixelSize, RGBA{0, 0, 0, 0}); // 记忆一下这个函数的用法，
 }
 
+void GPU::SetEnableBlending(const bool &bEnableBlending) {
+    mEnableBlending = bEnableBlending;
+}
+
 void GPU::DrawPoint(const uint32_t i, const uint32_t j, const RGBA &color) {
     uint32_t pixelPos = j * mFrameBuffer->GetWidth() + i;
-    mFrameBuffer->GetColorBuffer()[pixelPos] = color;
+    RGBA result = color;
+    if (mEnableBlending) {
+        //加入blending
+        auto src = color;
+        auto dst = mFrameBuffer->GetColorBuffer()[pixelPos];
+        float weight = static_cast<float>(src.mA) / 255.0f;
+
+        result.mR = static_cast<float>(src.mR) * weight + static_cast<float>(dst.mR) * (1.0f - weight);
+        result.mG = static_cast<float>(src.mG) * weight + static_cast<float>(dst.mG) * (1.0f - weight);
+        result.mB = static_cast<float>(src.mB) * weight + static_cast<float>(dst.mB) * (1.0f - weight);
+        result.mA = static_cast<float>(src.mA) * weight + static_cast<float>(dst.mA) * (1.0f - weight);
+    }
+
+    mFrameBuffer->GetColorBuffer()[pixelPos] = result;
 }
 
 void GPU::DrawLine(const Point &p, const Point &q) {
@@ -59,6 +76,17 @@ void GPU::DrawImage(Image *image) {
         for (int j = 0; j < image->mHeight; ++j) {
             int currentPos = j * image->mWidth + i;
             MALEOON->DrawPoint(i, j, image->mData[currentPos]);
+        }
+    }
+}
+
+void GPU::DrawImageWithAlpha(Image *image, const int alpha) {
+    RGBA color;
+    for (uint32_t i = 0; i < image->mWidth; ++i) {
+        for (uint32_t j = 0; j < image->mHeight; ++j) {
+            color = image->mData[j * image->mWidth + i];
+            color.mA = alpha;
+            MALEOON->DrawPoint(i, j, color);
         }
     }
 }

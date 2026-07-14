@@ -39,7 +39,9 @@ void Render() {
 	// Point p3{ 250, 500, RGBA(0, 0, 255, 255) };
 	// MALEOON->DrawTriangle(p1, p2, p3);
 	Image *image = Image::CreateImage("assets/textures/goku.jpg"); //
-	MALEOON->DrawImage(image);
+	MALEOON->SetEnableBlending(true);
+	// MALEOON->DrawImage(image);
+	MALEOON->DrawImageWithAlpha(image, 100);
 }
 
 
