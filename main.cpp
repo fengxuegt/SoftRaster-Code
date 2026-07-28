@@ -27,13 +27,13 @@ float cameraPos = 5.0f;
 // Point p1{ 0, 0, RGBA(255, 0, 0, 255)};
 // Point p2{ 400, 900, RGBA(0, 255, 0, 255) };
 // Point p3{ 800, 0, RGBA(0, 0, 255, 255) };
-void Prepare() {
-	imagee = Image::CreateImage("assets/textures/goku.jpg");
-	MALEOON->SetTexture(imagee);
-	p1.uv = math::vec2f(0.0f, 0.0f);
-	p2.uv = math::vec2f(0.5f, 1.0f);
-	p3.uv = math::vec2f(1.0f, 0.0f);
-}
+// void Prepare() {
+// 	imagee = Image::CreateImage("assets/textures/goku.jpg");
+// 	MALEOON->SetTexture(imagee);
+// 	p1.uv = math::vec2f(0.0f, 0.0f);
+// 	p2.uv = math::vec2f(0.5f, 1.0f);
+// 	p3.uv = math::vec2f(1.0f, 0.0f);
+// }
 void transform() {
 	angle += 0.01f;
 	cameraPos += 0.01f;
@@ -69,7 +69,7 @@ void transform() {
 	p3.x = sp3.x;
 	p3.y = sp3.y;
 }
-void prepare() {
+void Prepare() {
 	texture = Image::CreateImage("assets/textures/goku.jpg");
 
 	p1.color = RGBA(255, 0, 0, 255);
