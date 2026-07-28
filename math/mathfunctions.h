@@ -5,6 +5,7 @@
 #ifndef GRAPHIC_MATHFUNCTIONS_H
 #define GRAPHIC_MATHFUNCTIONS_H
 #include "vector.h"
+#include "matrix.h"
 namespace math {
 
 	/*
@@ -438,7 +439,7 @@ namespace math {
 		result.set(1, 1, static_cast<T>(2) / (top - bottom));
 		result.set(1, 3, -(top + bottom) / (top - bottom));
 		result.set(2, 2, -static_cast<T>(2) / (far - near));
-		result.set(1, 3, -(far + near) / (far - near));
+		result.set(2, 3, -(far + near) / (far - near));
 
 		return result;
 	}
