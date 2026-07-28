@@ -3,6 +3,7 @@
 #include "application/application.h"
 #include "gpu/gpu.h"
 #include "application/image.h"
+#include "math/math.h"
 
 #pragma comment(linker, "/subsystem:console /entry:wWinMainCRTStartup" )
 Image *imagee;

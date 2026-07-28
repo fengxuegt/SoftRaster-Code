@@ -5,5 +5,6 @@
 #ifndef GRAPHIC_MATH_H
 #define GRAPHIC_MATH_H
 #include "vector.h"
+#include "matrix.h"
 #include "mathfunctions.h"
 #endif //GRAPHIC_MATH_H
