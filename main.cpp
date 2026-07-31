@@ -35,7 +35,7 @@ float cameraPos = 5.0f;
 // 	p3.uv = math::vec2f(1.0f, 0.0f);
 // }
 void transform() {
-	angle += 0.01f;
+	angle += 0.03f;
 	cameraPos += 0.01f;
 
 	//模型变换
@@ -71,7 +71,7 @@ void transform() {
 }
 void Prepare() {
 	texture = Image::CreateImage("assets/textures/goku.jpg");
-
+	MALEOON->SetTexture(texture);
 	p1.color = RGBA(255, 0, 0, 255);
 	p1.uv = math::vec2f(0.0f, 0.0f);
 
