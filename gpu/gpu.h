@@ -6,7 +6,9 @@
 #define GRAPHIC_GPU_H
 #include <cstdint>
 
+#include "bufferobject.h"
 #include "framebuffer.h"
+#include "vertexarrayobject.h"
 #include "../application/image.h"
 #include "../global/base.h"
 #define MALEOON GPU::GetInstance()
@@ -39,6 +41,19 @@ private:
 
 private:
     Point lerp(const Point &a, const Point &b, float weight);
+
+public:
+    uint32_t GenBuffer();
+    void DeleteBuffer(uint32_t &index);
+
+    uint32_t GenVertexArray();
+    void DeleteVertexArray(uint32_t &index);
+
+private:
+    int mVBOCount{0};
+    std::map<uint32_t, BufferObject*> mVBOMap;
+    int mVAOCount{0};
+    std::map<uint32_t, VertexArrayObject*> mVAOMap;
 
 private:
     static GPU *mGPUInstance; // 声明时不能初始化，必须在cpp文件中初始化

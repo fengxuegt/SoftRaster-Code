@@ -34,62 +34,71 @@ float cameraPos = 5.0f;
 // 	p2.uv = math::vec2f(0.5f, 1.0f);
 // 	p3.uv = math::vec2f(1.0f, 0.0f);
 // }
-void transform() {
-	angle += 0.03f;
-	cameraPos += 0.01f;
-
-	//模型变换
-	modelMatrix = math::rotate(math::mat4f(1.0f), angle, math::vec3f{ 0.0f, 1.0f, 0.0f });
-
-	//模拟摄像机往后退
-	auto cameraModelMatrix = math::translate(math::mat4f(1.0f), math::vec3f{ 0.0f, 0.0f, cameraPos });
-	viewMatrix = math::inverse(cameraModelMatrix);
-
-	//mvp矩阵相乘
-	auto sp1 = perspectiveMatrix * viewMatrix * modelMatrix * pos1;
-	auto sp2 = perspectiveMatrix * viewMatrix * modelMatrix * pos2;
-	auto sp3 = perspectiveMatrix * viewMatrix * modelMatrix * pos3;
-
-	//透视除法（此处故意设计z！=0）
-	sp1 /= sp1.w;
-	sp2 /= sp2.w;
-	sp3 /= sp3.w;
-
-	//屏幕空间
-	sp1 = screenMatrix * sp1;
-	sp2 = screenMatrix * sp2;
-	sp3 = screenMatrix * sp3;
-
-	p1.x = sp1.x;
-	p1.y = sp1.y;
-
-	p2.x = sp2.x;
-	p2.y = sp2.y;
-
-	p3.x = sp3.x;
-	p3.y = sp3.y;
-}
+// void transform() {
+// 	angle += 0.03f;
+// 	cameraPos += 0.01f;
+//
+// 	//模型变换
+// 	modelMatrix = math::rotate(math::mat4f(1.0f), angle, math::vec3f{ 0.0f, 1.0f, 0.0f });
+//
+// 	//模拟摄像机往后退
+// 	auto cameraModelMatrix = math::translate(math::mat4f(1.0f), math::vec3f{ 0.0f, 0.0f, cameraPos });
+// 	viewMatrix = math::inverse(cameraModelMatrix);
+//
+// 	//mvp矩阵相乘
+// 	auto sp1 = perspectiveMatrix * viewMatrix * modelMatrix * pos1;
+// 	auto sp2 = perspectiveMatrix * viewMatrix * modelMatrix * pos2;
+// 	auto sp3 = perspectiveMatrix * viewMatrix * modelMatrix * pos3;
+//
+// 	//透视除法（此处故意设计z！=0）
+// 	sp1 /= sp1.w;
+// 	sp2 /= sp2.w;
+// 	sp3 /= sp3.w;
+//
+// 	//屏幕空间
+// 	sp1 = screenMatrix * sp1;
+// 	sp2 = screenMatrix * sp2;
+// 	sp3 = screenMatrix * sp3;
+//
+// 	p1.x = sp1.x;
+// 	p1.y = sp1.y;
+//
+// 	p2.x = sp2.x;
+// 	p2.y = sp2.y;
+//
+// 	p3.x = sp3.x;
+// 	p3.y = sp3.y;
+// }
+// void Prepare() {
+// 	texture = Image::CreateImage("assets/textures/goku.jpg");
+// 	MALEOON->SetTexture(texture);
+// 	p1.color = RGBA(255, 0, 0, 255);
+// 	p1.uv = math::vec2f(0.0f, 0.0f);
+//
+// 	p2.color = RGBA(0, 255, 0, 255);
+// 	p2.uv = math::vec2f(1.0f, 1.0f);
+//
+// 	p3.color = RGBA(0, 0, 255, 255);
+// 	p3.uv = math::vec2f(1.0f, 0.0f);
+//
+// 	pos1 = {-1.5f, 0.0f, 0.0f, 1.0f};
+// 	pos2 = {1.5f, 0.0f, 0.0f, 1.0f };
+// 	pos3 = {0.0f, 2.0f, 0.0f, 1.0f };
+//
+// 	perspectiveMatrix = math::perspective(60.0f, (float)app->GetWidth() / (float)app->GetHeight(), 0.1f, 100.0f);
+// 	screenMatrix = math::screenMatrix<float>(app->GetWidth(), app->GetHeight());
+// }
+uint32_t vbo{0};
+uint32_t vao{0};
 void Prepare() {
-	texture = Image::CreateImage("assets/textures/goku.jpg");
-	MALEOON->SetTexture(texture);
-	p1.color = RGBA(255, 0, 0, 255);
-	p1.uv = math::vec2f(0.0f, 0.0f);
+	vbo = MALEOON->GenBuffer();
+	MALEOON->DeleteBuffer(vbo);
+	vao = MALEOON->GenVertexArray();
+	MALEOON->DeleteVertexArray(vao);
 
-	p2.color = RGBA(0, 255, 0, 255);
-	p2.uv = math::vec2f(1.0f, 1.0f);
-
-	p3.color = RGBA(0, 0, 255, 255);
-	p3.uv = math::vec2f(1.0f, 0.0f);
-
-	pos1 = {-1.5f, 0.0f, 0.0f, 1.0f};
-	pos2 = {1.5f, 0.0f, 0.0f, 1.0f };
-	pos3 = {0.0f, 2.0f, 0.0f, 1.0f };
-
-	perspectiveMatrix = math::perspective(60.0f, (float)app->GetWidth() / (float)app->GetHeight(), 0.1f, 100.0f);
-	screenMatrix = math::screenMatrix<float>(app->GetWidth(), app->GetHeight());
 }
 void Render() {
-	transform();
+	// transform();
 	MALEOON->ClearSurfaceView();
 	MALEOON->DrawTriangle(p1, p2, p3);
 }

@@ -20,6 +20,38 @@ GPU * GPU::GetInstance() {
 GPU::GPU() {
 }
 
+uint32_t GPU::GenBuffer() {
+    mVBOCount++;
+    mVBOMap.insert(std::make_pair(mVBOCount, new BufferObject()));
+    return mVBOCount;
+}
+
+void GPU::DeleteBuffer(uint32_t &index) {
+    auto iter = mVBOMap.find(index);
+    if (iter != mVBOMap.end()) {
+        delete iter->second;
+    }else {
+        return;
+    }
+    mVBOMap.erase(iter);
+}
+
+uint32_t GPU::GenVertexArray() {
+    mVAOCount++;
+    mVAOMap.insert(std::make_pair(mVAOCount, new VertexArrayObject()));
+    return mVAOCount;
+}
+
+void GPU::DeleteVertexArray(uint32_t &index) {
+    auto iter = mVAOMap.find(index);
+    if (iter != mVAOMap.end()) {
+        delete iter->second;
+    } else {
+        return;
+    }
+    mVAOMap.erase(iter);
+}
+
 
 GPU::~GPU() {
     if (mFrameBuffer) {
