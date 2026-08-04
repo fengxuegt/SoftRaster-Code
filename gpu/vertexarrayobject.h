@@ -16,11 +16,9 @@ public:
 
     void Set(uint32_t binding, uint32_t vboID, size_t itemSize, size_t stride, size_t offset);
 
-    const std::map<uint32_t, BindingDescription>& GetBindingMap() const {
+    std::map<uint32_t, BindingDescription> GetBindingMap() const {
         return mBindingMap;
     }
-
-    void Print();
 
 private:
     std::map<uint32_t, BindingDescription> mBindingMap;

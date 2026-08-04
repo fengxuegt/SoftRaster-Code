@@ -36,31 +36,6 @@ void GPU::DeleteBuffer(uint32_t &index) {
     mVBOMap.erase(iter);
 }
 
-void GPU::BindBuffer(const uint32_t &bufferType, const uint32_t &index) {
-    if (bufferType == ARRAY_BUFFER) {
-        mCurrentVBO = index;
-    } else if (bufferType == ELEMENT_ARRAY_BUFFER) {
-        mCurrentEBO = index;
-    }
-}
-
-void GPU::BufferData(const uint32_t &bufferType, size_t dataSize, void *data) {
-    uint32_t bufferID = 0;
-    if (bufferType == ARRAY_BUFFER) {
-        bufferID = mCurrentVBO;
-    } else if (bufferType == ELEMENT_ARRAY_BUFFER) {
-        bufferID = mCurrentEBO;
-    } else {
-        assert(false);
-    }
-    auto iter = mVBOMap.find(bufferID);
-    if (iter != mVBOMap.end()) {
-        iter->second->SetBufferData(dataSize, data);
-    } else {
-        assert(false);
-    }
-}
-
 uint32_t GPU::GenVertexArray() {
     mVAOCount++;
     mVAOMap.insert(std::make_pair(mVAOCount, new VertexArrayObject()));
@@ -75,27 +50,6 @@ void GPU::DeleteVertexArray(uint32_t &index) {
         return;
     }
     mVAOMap.erase(iter);
-}
-
-void GPU::BindVertexArray(uint32_t index) {
-    mCurrentVAO = index;
-}
-
-void GPU::VertexAttributePointer(const uint32_t &binding, const uint32_t &itemSize, const uint32_t &stride,
-    const uint32_t &offset) {
-    auto iter = mVAOMap.find(mCurrentVAO);
-    if (iter != mVAOMap.end()) {
-        iter->second->Set(binding, mCurrentVBO, itemSize, stride, offset);
-    } else {
-        assert(false);
-    }
-}
-
-void GPU::PrintVao(const uint32_t &vaoID) {
-    auto iter = mVAOMap.find(vaoID);
-    if (iter != mVAOMap.end()) {
-        iter->second->Print();
-    }
 }
 
 
