@@ -18,7 +18,7 @@ public:
 
 private:
     size_t mBufferSize{0}; // buffer 大小
-    void *mBuffer{nullptr}; // 指向Buffer的指针
+    byte *mBuffer{nullptr}; // 指向Buffer的指针
 
 };
 

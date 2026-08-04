@@ -15,11 +15,11 @@ VertexArrayObject::~VertexArrayObject() {
 void VertexArrayObject::Set(uint32_t binding, uint32_t vboID, size_t itemSize, size_t stride, size_t offset) {
     auto iter = mBindingMap.find(binding);
     if (iter == mBindingMap.end()) {
-        iter = mBindingMap.insert(std::make_pair(binding,BindingDescription)).first;
+        iter = mBindingMap.insert(std::make_pair(binding,BindingDescription())).first;
     }
     auto &bindingDescription = iter->second;
-    bindingDescription.vboID = vboID;
-    bindingDescription.itemSize = itemSize;
-    bindingDescription.stride = stride;
-    bindingDescription.offset = offset;
+    bindingDescription.mVBOId = vboID;
+    bindingDescription.mItemSize = itemSize;
+    bindingDescription.mStride = stride;
+    bindingDescription.mOffset = offset;
 }
