@@ -39,3 +39,6 @@ struct Point {
     RGBA color;
     math::vec2f uv{0.0f, 0.0f};
 };
+
+#define ARRAY_BUFFER 0
+#define ELEMENT_ARRAY_BUFFER 1

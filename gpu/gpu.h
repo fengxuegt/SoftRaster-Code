@@ -45,9 +45,19 @@ private:
 public:
     uint32_t GenBuffer();
     void DeleteBuffer(uint32_t &index);
+    void BindBuffer(const uint32_t &bufferType, const uint32_t &index);
+    void BufferData(const uint32_t &bufferType, size_t dataSize, void *data);
 
     uint32_t GenVertexArray();
     void DeleteVertexArray(uint32_t &index);
+    void BindVertexArray(uint32_t index);
+    void VertexAttributePointer(
+        const uint32_t &binding,
+        const uint32_t &itemSize,
+        const uint32_t &stride,
+        const uint32_t &offset);
+
+    void PrintVao(const uint32_t &vaoID);
 
 private:
     int mVBOCount{0};
@@ -61,6 +71,14 @@ private:
     bool mEnableBlending {false};
 
     Image *mTexture {nullptr};
+
+private:
+    uint32_t mCurrentVBO{0};
+    uint32_t mCurrentEBO{0};
+
+private:
+    uint32_t mCurrentVAO{0};
+
 };
 
 
