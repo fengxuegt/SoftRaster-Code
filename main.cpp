@@ -3,6 +3,7 @@
 #include "application/application.h"
 #include "gpu/gpu.h"
 #include "application/image.h"
+#include "gpu/defaultshader.h"
 #include "math/mathfunctions.h"
 #include "math/matrix.h"
 
@@ -12,6 +13,19 @@
 uint32_t positionVbo = 0;
 uint32_t colorVbo = 0;
 uint32_t uvVbo = 0;
+DefaultShader* shader = nullptr;
+
+//mvp变换矩阵
+math::mat4f modelMatrix;
+math::mat4f viewMatrix;
+math::mat4f perspectiveMatrix;
+
+float angle = 0.0f;
+void transform() {
+	angle += 0.01f;
+	//模型变换
+	modelMatrix = math::rotate(math::mat4f(1.0f), angle, math::vec3f{ 0.0f, 1.0f, 0.0f });
+}
 
 //三角形的indices
 uint32_t ebo = 0;
@@ -19,6 +33,13 @@ uint32_t ebo = 0;
 //本三角形专属vao
 uint32_t vao = 0;
 void Prepare() {
+	shader = new DefaultShader();
+
+	perspectiveMatrix = math::perspective(60.0f, (float)app->GetWidth() / (float)app->GetHeight(), 0.1f, 100.0f);
+
+	auto cameraModelMatrix = math::translate(math::mat4f(1.0f), math::vec3f{ 0.0f, 0.0f, 3.0f });
+	viewMatrix = math::inverse(cameraModelMatrix);
+
 	float positions[] = {
 		-0.5f, -0.5f, 0.0f,
 		-0.5f, 0.5f, 0.0f,
@@ -36,38 +57,50 @@ void Prepare() {
 		0.0f, 1.0f,
 		1.0f, 0.0f,
 	};
+
 	uint32_t indices[] = { 0, 1, 2 };
 
+	//生成indices对应ebo
 	ebo = MALEOON->GenBuffer();
 	MALEOON->BindBuffer(ELEMENT_ARRAY_BUFFER, ebo);
-	MALEOON->BufferData(ELEMENT_ARRAY_BUFFER, sizeof(indices), indices);
+	MALEOON->BufferData(ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * 3, indices);
 	MALEOON->BindBuffer(ELEMENT_ARRAY_BUFFER, 0);
 
+	//生成vao并且绑定
 	vao = MALEOON->GenVertexArray();
 	MALEOON->BindVertexArray(vao);
-	auto positionVBO = MALEOON->GenBuffer();
-	MALEOON->BindBuffer(ARRAY_BUFFER, positionVBO);
-	MALEOON->BufferData(ARRAY_BUFFER, sizeof(positions), positions);
+
+	//生成每个vbo，绑定后，设置属性ID及读取参数
+	auto positionVbo = MALEOON->GenBuffer();
+	MALEOON->BindBuffer(ARRAY_BUFFER, positionVbo);
+	MALEOON->BufferData(ARRAY_BUFFER, sizeof(float) * 9, positions);
 	MALEOON->VertexAttributePointer(0, 3, 3 * sizeof(float), 0);
 
-	auto colorVBO = MALEOON->GenBuffer();
-	MALEOON->BindBuffer(ARRAY_BUFFER, colorVBO);
-	MALEOON->BufferData(ARRAY_BUFFER, sizeof(colors), colors);
+	auto colorVbo = MALEOON->GenBuffer();
+	MALEOON->BindBuffer(ARRAY_BUFFER, colorVbo);
+	MALEOON->BufferData(ARRAY_BUFFER, sizeof(float) * 12, colors);
 	MALEOON->VertexAttributePointer(1, 4, 4 * sizeof(float), 0);
 
-	auto uvVBO = MALEOON->GenBuffer();
-	MALEOON->BindBuffer(ARRAY_BUFFER, uvVBO);
-	MALEOON->BufferData(ARRAY_BUFFER, sizeof(uvs), uvs);
+	auto uvVbo = MALEOON->GenBuffer();
+	MALEOON->BindBuffer(ARRAY_BUFFER, uvVbo);
+	MALEOON->BufferData(ARRAY_BUFFER, sizeof(float) * 6, uvs);
 	MALEOON->VertexAttributePointer(2, 2, 2 * sizeof(float), 0);
 
 	MALEOON->BindBuffer(ARRAY_BUFFER, 0);
 	MALEOON->BindVertexArray(0);
 
-	MALEOON->PrintVao(vao);
-
 }
 void Render() {
+	transform();
+	shader->mModelMatrix = modelMatrix;
+	shader->mViewMatrix = viewMatrix;
+	shader->mProjectionMatrix = perspectiveMatrix;
 	MALEOON->ClearSurfaceView();
+	MALEOON->UseProgram(shader);
+	MALEOON->BindVertexArray(vao);
+	MALEOON->BindBuffer(ELEMENT_ARRAY_BUFFER, ebo);
+	// MALEOON->DrawElement(DRAW_TRIANGLES, 0, 3);
+	MALEOON->DrawElement(DRAW_LINES, 0, 3);
 }
 
 

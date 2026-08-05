@@ -98,6 +98,72 @@ void GPU::PrintVao(const uint32_t &vaoID) {
     }
 }
 
+void GPU::PerspectiveDivision(VsOutput &vsOutput) {
+    float oneOverW = 1.0 / vsOutput.mPosition.w;
+    vsOutput.mPosition *= oneOverW;
+    vsOutput.mPosition.w = 1.0f;;
+}
+
+void GPU::VertexShaderStage(std::vector<VsOutput> &vsOutputs, const VertexArrayObject *vao, const BufferObject *ebo,
+    uint32_t first, uint32_t count) {
+    auto bindingMap = vao->GetBindingMap();
+    byte* indicesData = ebo->GetBuffer();
+    uint32_t index = 0;
+    for (uint32_t i = first; i < first + count; i++) {
+        size_t indicesOffset = i * sizeof(uint32_t);
+        memcpy(&index, indicesData + indicesOffset, sizeof(uint32_t));
+        VsOutput output = mShader->vertexShader(bindingMap, mVBOMap, index);
+        vsOutputs.push_back(output);
+    }
+}
+
+void GPU::ScreenMapping(VsOutput &value) {
+    value.mPosition = mScreenMatrix * value.mPosition;
+}
+
+void GPU::DrawElement(const uint32_t &drawMode, const uint32_t &first, const uint32_t &count) {
+    if (mCurrentVAO == 0 || mShader == nullptr || count == 0) {
+        return;
+    }
+    auto vaoIter = mVAOMap.find(mCurrentVAO);
+    if (vaoIter == mVAOMap.end()) {
+        std::cerr << "Can't find VAO" << std::endl;
+        return;
+    }
+    const VertexArrayObject *vao = vaoIter->second;
+    auto bindingMap = vao->GetBindingMap();
+    auto eboIter = mVBOMap.find(mCurrentEBO);
+    if (eboIter == mVBOMap.end()) {
+        std::cerr << "Can't find EBO" << std::endl;
+        return;
+    }
+    const BufferObject *ebo = eboIter->second;
+    std::vector<VsOutput> vsOutputs;
+    VertexShaderStage(vsOutputs, vao, ebo, first, count);
+    if (vsOutputs.empty()) {
+        return;
+    }
+    for (auto &output : vsOutputs) {
+        PerspectiveDivision(output);
+    }
+    for (auto &output : vsOutputs) {
+        ScreenMapping(output);
+    }
+
+    std::vector<VsOutput> rasterOutputs;
+    Raster::rasterize(rasterOutputs, drawMode, vsOutputs);
+    if (rasterOutputs.empty()) {
+        return;
+    }
+    FsOutput fsOutput;
+    uint32_t pixelPos = 0;
+    for (uint32_t i = 0; i < rasterOutputs.size(); ++i) {
+        mShader->fragmentShader(rasterOutputs[i], fsOutput);
+        pixelPos = fsOutput.mPixelPos.y * mFrameBuffer->GetWidth() + fsOutput.mPixelPos.x;
+        mFrameBuffer->GetColorBuffer()[pixelPos] = fsOutput.mColor;
+    }
+}
+
 
 GPU::~GPU() {
     if (mFrameBuffer) {

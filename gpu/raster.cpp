@@ -89,6 +89,11 @@ void Raster::InterpolantLine(const Point &start, const Point &end, float weight,
     target.color = color;
 }
 
+void Raster::InterpolantLine(const VsOutput &start, const VsOutput &end, float weight, VsOutput &target) {
+    target.mColor = math::lerp(start.mColor, end.mColor, weight);
+    target.mUV = math::lerp(start.mUV, end.mUV, weight);
+}
+
 void Raster::DrawTriangle(std::vector<Point> &results, const Point &pointA, const Point &pointB, const Point &pointC) {
     int left = std::min(pointA.x, std::min(pointB.x, pointC.x));
     int right = std::max(pointA.x, std::max(pointB.x, pointC.x));
@@ -227,4 +232,88 @@ Raster::Raster() {
 }
 
 Raster::~Raster() {
+}
+
+void Raster::RasterizeLine(std::vector<VsOutput> &results, const VsOutput &p, const VsOutput &q) {
+    VsOutput start = p;
+    VsOutput end = q;
+
+    // insure x - >
+    if (start.mPosition.x > end.mPosition.x) {
+        std::swap(start, end);
+    }
+    results.push_back(start); // 这一步要保证在变换坐标之前，如果在之后的话start就不是原来的start了；
+
+    // insure y ->
+    bool flipY = false;
+    if (start.mPosition.y > end.mPosition.y) {
+        start.mPosition.y *= -1;
+        end.mPosition.y *= -1;
+        flipY = true;
+    }
+
+    // 写法1
+    // 先计算delta，如果要交换xy的话delta也要交换
+    // insure rate < 1
+    // bool swapXY = false;
+    // float deltaX = static_cast<float>(end.x - start.x);
+    // float deltaY = static_cast<float>(end.y - start.y);
+    // if (deltaX < deltaY) {
+    //     std::swap(start.x, start.y);
+    //     std::swap(end.x, end.y);
+    //     std::swap(deltaX, deltaY); // 这里别忘记了；要不就交换完成之后再计算delta
+    //     swapXY = true;
+    // }
+
+
+    // 写法2
+    // 首先计算要不要交换xy，然后计算delta
+    bool swapXY = false;
+    if (end.mPosition.x - start.mPosition.x < end.mPosition.y - start.mPosition.y) {
+        std::swap(start.mPosition.x, start.mPosition.y);
+        std::swap(end.mPosition.x, end.mPosition.y);
+        swapXY = true;
+    }
+    float deltaX = static_cast<float>(end.mPosition.x - start.mPosition.x);
+    float deltaY = static_cast<float>(end.mPosition.y - start.mPosition.y);
+
+    // calculate p
+    float cur = static_cast<float>(2 * deltaY - deltaX);
+    VsOutput curPoint = start;
+    int currentX = static_cast<int>(start.mPosition.x);
+    int currentY = static_cast<int>(start.mPosition.y);
+    for (int i = 0; i < deltaX; i++) {
+        currentX++;
+        if (cur >=0) {
+            currentY++;
+            cur -= 2 * deltaX;
+        }
+        cur += 2 * deltaY;
+        curPoint.mPosition.x = currentX;
+        curPoint.mPosition.y = currentY;
+        float weight = i / static_cast<float>(deltaX);
+        InterpolantLine(start, end, weight, curPoint);
+
+        if (swapXY) {
+            std::swap(curPoint.mPosition.x, curPoint.mPosition.y);
+        }
+        if (flipY) {
+            curPoint.mPosition.y *= -1;
+        }
+        // curPoint.color = RGBA(0, 255, 0, 255);
+        results.push_back(curPoint);
+    }
+
+}
+
+void Raster::rasterize(std::vector<VsOutput> &results, const uint32_t &drawMode, const std::vector<VsOutput> &inputs) {
+    if (drawMode == DRAW_LINES) {
+        for (uint32_t i = 0; i < inputs.size(); i += 2) {
+            RasterizeLine(results, inputs[i], inputs[i + 1]);
+        }
+    }
+    if (drawMode == DRAW_TRIANGLES) {
+
+    }
+
 }

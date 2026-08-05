@@ -480,6 +480,12 @@ namespace math {
 
 		return result;
 	}
+	static vec4f lerp(const vec4f& v1, const vec4f& v2, const float& weight) {
+		return v2 * weight + v1 * (1.0f - weight);
+	}
+	static vec2f lerp(const vec2f& v1, const vec2f& v2, const float& weight) {
+		return v2 * weight + v1 * (1.0f - weight);
+	}
 
 }
 

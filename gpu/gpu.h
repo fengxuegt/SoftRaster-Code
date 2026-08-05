@@ -8,6 +8,7 @@
 
 #include "bufferobject.h"
 #include "framebuffer.h"
+#include "shader.h"
 #include "vertexarrayobject.h"
 #include "../application/image.h"
 #include "../global/base.h"
@@ -58,6 +59,22 @@ public:
         const uint32_t &offset);
 
     void PrintVao(const uint32_t &vaoID);
+    void UseProgram(Shader *shader) {
+        mShader = shader;
+    }
+
+    void PerspectiveDivision(VsOutput & vsOutput);
+
+    void VertexShaderStage(std::vector<VsOutput> & vsOutputs,
+        const VertexArrayObject * vao,
+        const BufferObject * ebo,
+        uint32_t first,
+        uint32_t count);
+
+    void ScreenMapping(VsOutput & value);
+
+    void DrawElement(const uint32_t &drawMode, const uint32_t & first,
+                     const uint32_t & count);
 
 private:
     int mVBOCount{0};
@@ -79,6 +96,8 @@ private:
 private:
     uint32_t mCurrentVAO{0};
 
+    Shader* mShader{ nullptr };
+    math::mat4f mScreenMatrix;
 };
 
 
