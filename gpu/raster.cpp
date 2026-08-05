@@ -218,6 +218,44 @@ void Raster::InterpolantTriangle(const Point &pointA, const Point &pointB, const
     target.uv[1] = static_cast<float>(pointA.uv[1] * weightA + pointB.uv[1] * weightB + pointC.uv[1] * weightC);
 }
 
+void Raster::InterpolantTriangle(const VsOutput &pointA, const VsOutput &pointB, const VsOutput &pointC,
+    VsOutput &target) {
+    math::vec2f ab {
+        static_cast<float>(pointB.mPosition.x - pointA.mPosition.x),
+        static_cast<float>(pointB.mPosition.y - pointA.mPosition.y)
+    };
+    math::vec2f ac {
+        static_cast<float>(pointC.mPosition.x - pointA.mPosition.x),
+        static_cast<float>(pointC.mPosition.y - pointA.mPosition.y)
+    };
+
+    math::vec2f pa {
+        static_cast<float>(pointA.mPosition.x - target.mPosition.x),
+        static_cast<float>(pointA.mPosition.y - target.mPosition.y)
+    };
+    math::vec2f pb {
+        static_cast<float>(pointB.mPosition.x - target.mPosition.x),
+        static_cast<float>(pointB.mPosition.y - target.mPosition.y)
+    };
+    math::vec2f pc {
+        static_cast<float>(pointC.mPosition.x - target.mPosition.x),
+        static_cast<float>(pointC.mPosition.y - target.mPosition.y)
+    };
+
+    float sTriangle = std::abs(math::cross(ab, ac));
+    float sPAB = std::abs(math::cross(pa, pb));
+    float sPBC = std::abs(math::cross(pb, pc));
+    float sPCA = std::abs(math::cross(pc, pa));
+
+    float weightA = sPBC / sTriangle;
+    float weightB = sPCA / sTriangle;
+    float weightC = sPAB / sTriangle;
+
+    target.mColor = math::lerp(pointA.mColor, pointB.mColor, pointC.mColor, weightA, weightB, weightC);
+
+    target.mUV = math::lerp2(pointA.mUV, pointB.mUV, pointC.mUV, weightA, weightB, weightC);
+}
+
 RGBA Raster::lerpRGBA(const RGBA &a, const RGBA &b, float weight) {
     RGBA result;
     result.mA = static_cast<byte>(a.mA * (1 - weight) + b.mA * weight);
@@ -306,6 +344,40 @@ void Raster::RasterizeLine(std::vector<VsOutput> &results, const VsOutput &p, co
 
 }
 
+void Raster::RasterizeTriangle(std::vector<VsOutput> &results, const VsOutput &pointA, const VsOutput &pointB,
+    const VsOutput &pointC) {
+    int left = std::min(pointA.mPosition.x, std::min(pointB.mPosition.x, pointC.mPosition.x));
+    int right = std::max(pointA.mPosition.x, std::max(pointB.mPosition.x, pointC.mPosition.x));
+    int top = std::max(pointA.mPosition.y, std::max(pointB.mPosition.y, pointC.mPosition.y));
+    int bottom = std::min(pointA.mPosition.y, std::min(pointB.mPosition.y, pointC.mPosition.y));
+
+    math::vec2f pa, pb, pc;
+    VsOutput currentPoint;
+    for (int i = left; i <= right; i++) {
+        for (int j = bottom; j <= top; j++) {
+            currentPoint.mPosition.x = i;
+            currentPoint.mPosition.y = j;
+
+            pa.x = static_cast<float>(pointA.mPosition.x - currentPoint.mPosition.x);
+            pa.y = static_cast<float>(pointA.mPosition.y - currentPoint.mPosition.y);
+
+            pb.x = static_cast<float>(pointB.mPosition.x - currentPoint.mPosition.x);
+            pb.y = static_cast<float>(pointB.mPosition.y - currentPoint.mPosition.y);
+
+            pc.x = static_cast<float>(pointC.mPosition.x - currentPoint.mPosition.x);
+            pc.y = static_cast<float>(pointC.mPosition.y - currentPoint.mPosition.y);
+
+            // 叉积可以考虑大于或者等于0
+            if ((math::cross(pa, pb) >= 0 && math::cross(pb, pc) >= 0 && math::cross(pc, pa) >= 0) ||
+                (math::cross(pa, pb) <= 0 && math::cross(pb, pc) <= 0 && math::cross(pc, pa) <= 0)) {
+                // 保证在三角形内部再计算插值
+                InterpolantTriangle(pointA, pointB, pointC, currentPoint);
+                results.push_back(currentPoint);
+                }
+        }
+    }
+}
+
 void Raster::rasterize(std::vector<VsOutput> &results, const uint32_t &drawMode, const std::vector<VsOutput> &inputs) {
     if (drawMode == DRAW_LINES) {
         for (uint32_t i = 0; i < inputs.size(); i += 2) {
@@ -313,6 +385,9 @@ void Raster::rasterize(std::vector<VsOutput> &results, const uint32_t &drawMode,
         }
     }
     if (drawMode == DRAW_TRIANGLES) {
+        for (uint32_t i = 0; i < inputs.size(); i += 3) {
+            RasterizeTriangle(results, inputs[0], inputs[1], inputs[2]);
+        }
 
     }
 

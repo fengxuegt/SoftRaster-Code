@@ -173,6 +173,7 @@ GPU::~GPU() {
 
 void GPU::InitSurfaceView(const uint32_t &width, const uint32_t &height, void *data) {
     mFrameBuffer = new FrameBuffer(width, height, data);
+    mScreenMatrix = math::screenMatrix<float>(width - 1, height - 1);
 }
 
 void GPU::ClearSurfaceView() {

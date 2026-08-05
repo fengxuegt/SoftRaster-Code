@@ -58,7 +58,7 @@ void Prepare() {
 		1.0f, 0.0f,
 	};
 
-	uint32_t indices[] = { 0, 1, 2 };
+	uint32_t indices[] = { 0, 1, 2};
 
 	//生成indices对应ebo
 	ebo = MALEOON->GenBuffer();

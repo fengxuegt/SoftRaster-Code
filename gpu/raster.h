@@ -19,6 +19,7 @@ public:
     static void DrawTriangle(std::vector<Point> &results, const Point &pointA, const Point &pointB, const Point &pointC);
     static void DrawTriangleReference(std::vector<Point> &results, const Point &pointA, const Point &pointB, const Point &pointC);
     static void InterpolantTriangle(const Point &pointA, const Point &pointB, const Point &pointC, Point &target);
+    static void InterpolantTriangle(const VsOutput &pointA, const VsOutput &pointB, const VsOutput &pointC, VsOutput &target);
 
     static RGBA lerpRGBA(const RGBA &a, const RGBA &b, float weight);
 
@@ -29,6 +30,11 @@ public:
     static void RasterizeLine(std::vector<VsOutput> & results,
         const VsOutput &p,
         const VsOutput &q);
+    static void RasterizeTriangle(std::vector<VsOutput> & results,
+        const VsOutput &pointA,
+        const VsOutput &pointB,
+        const VsOutput &pointC
+        );
 
     static void rasterize(std::vector<VsOutput> & results,
                    const uint32_t & drawMode,
