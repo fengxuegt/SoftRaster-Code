@@ -99,8 +99,8 @@ void Render() {
 	MALEOON->UseProgram(shader);
 	MALEOON->BindVertexArray(vao);
 	MALEOON->BindBuffer(ELEMENT_ARRAY_BUFFER, ebo);
-	// MALEOON->DrawElement(DRAW_TRIANGLES, 0, 3);
-	MALEOON->DrawElement(DRAW_LINES, 0, 3);
+	MALEOON->DrawElement(DRAW_TRIANGLES, 0, 3);
+	// MALEOON->DrawElement(DRAW_LINES, 0, 2);
 }
 
 
